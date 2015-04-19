@@ -1,0 +1,2 @@
+# JSMine
+JavaScript Mine Sweeper.
