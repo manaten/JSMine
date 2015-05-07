@@ -6,9 +6,9 @@ import FieldView from './view/field'
 import GameModel from './model/game'
 
 function init() {
-  const width = getParameter('width') || 20
-  const height = getParameter('height') || 10
-  const mineNum = getParameter('mine') || 30
+  const width = parseInt(getParameter('width') || 20)
+  const height = parseInt(getParameter('height') || 10)
+  const mineNum = parseInt(getParameter('mine') || 30)
 
   const gameModel = new GameModel(width, height, mineNum)
   const fieldView = new FieldView(width, height)
