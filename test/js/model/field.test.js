@@ -147,24 +147,6 @@ describe('Model/Field', () => {
     })
   })
 
-  describe('#getNeighborMineCount', () => {
-    const width = 3
-    const height = 4
-    const isMineArray = [
-      true,  false, true,
-      false, false, false,
-      false,  true, false,
-      true,  true, false,
-    ]
-    it('should return neighbor mine count.', () => {
-      let field = new Field(width, height)
-      field.setMines(isMineArray)
-      assert(field.getNeighborMineCount(field.getCell(0, 0)) === 0)
-      assert(field.getNeighborMineCount(field.getCell(1, 1)) === 3)
-      assert(field.getNeighborMineCount(field.getCell(2, 3)) === 2)
-    })
-  })
-
   describe('#openCell', () => {
     const width = 3
     const height = 4

@@ -33,7 +33,7 @@ export default class Game extends EventEmitter2 {
   /**
    * @private
    */
-  createMineArray(startX, startY) {
+  _createMineArray(startX, startY) {
     let isMineArray = chain(this.field.width * this.field.height - 1)
       .range()
       .map(n => n < this.mineCount)
@@ -78,7 +78,7 @@ export default class Game extends EventEmitter2 {
     // 初回クリック時のみ、地雷を生成する
     if (this.isFirst) {
       this.isFirst = false
-      this.field.setMines(this.createMineArray(x, y))
+      this.field.setMines(this._createMineArray(x, y))
     }
 
     const cell = this.field.getCell(x, y)

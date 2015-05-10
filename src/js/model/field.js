@@ -56,7 +56,7 @@ export default class Field extends EventEmitter2 {
       cell.isMine = isMine
     })
     this.cells.forEach(cell => {
-      cell.neighborMineCount = this.getNeighborMineCount(cell)
+      cell.neighborMineCount = this.getNeighborCells(cell).filter(cell => cell.isMine).length
     })
   }
 
@@ -89,16 +89,6 @@ export default class Field extends EventEmitter2 {
   }
 
   /**
-   * 指定したセルの周囲のセルの地雷数を取得する
-   * @private
-   * @param  {Cell} cell
-   * @return {number}
-   */
-  getNeighborMineCount(cell) {
-    return this.getNeighborCells(cell).filter(cell => cell.isMine).length
-  }
-
-  /**
    * 指定した座標のセルを開く
    * @param  {number} x
    * @param  {number} y
@@ -115,7 +105,7 @@ export default class Field extends EventEmitter2 {
       cell.state = CellState.OPEN
       this.emit('change:cell', cell)
       // セルが地雷ではなく、周囲のセルに地雷がなかった場合は、周囲のセルも開く。
-      if (!cell.isMine && this.getNeighborMineCount(cell) === 0) {
+      if (!cell.isMine && cell.neighborMineCount === 0) {
         targetCells.push.apply(targetCells, this.getNeighborCells(cell))
       }
     }
