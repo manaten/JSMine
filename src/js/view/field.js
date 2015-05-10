@@ -2,6 +2,7 @@ import {Texture, Sprite, Stage} from 'pixi.js'
 import {range} from 'lodash'
 import {EventEmitter2} from 'eventemitter2'
 
+import mixin from '../util/mixin'
 import * as CellState from '../const/cellstate'
 
 const MINE_SIZE = 16
@@ -13,11 +14,11 @@ class Cell extends Sprite {
   }
 }
 
-export default class Field extends Stage {
+export default class Field extends mixin(Stage, EventEmitter2) {
   constructor(fieldWidth, fieldHeight) {
     super(0x888888)
+    EventEmitter2.apply(this)
 
-    this.emitter = new EventEmitter2
     this.fieldWidth = fieldWidth
     this.fieldHeight = fieldHeight
 
@@ -62,9 +63,9 @@ export default class Field extends Stage {
    */
   mouseup() {
     if (this.isMouseLeftDown && this.isMouseRightDown) {
-      this.emitter.emit('click:twin', this.getHoveredCellPosition())
+      this.emit('click:twin', this.getHoveredCellPosition())
     } else if (this.isMouseLeftDown) {
-      this.emitter.emit('click:left', this.getHoveredCellPosition())
+      this.emit('click:left', this.getHoveredCellPosition())
     }
     this.isMouseLeftDown = false
   }
@@ -74,7 +75,7 @@ export default class Field extends Stage {
    */
   rightup() {
     if (this.isMouseLeftDown && this.isMouseRightDown) {
-      this.emitter.emit('click:twin', this.getHoveredCellPosition())
+      this.emit('click:twin', this.getHoveredCellPosition())
     }
     this.isMouseRightDown = false
   }
@@ -84,48 +85,55 @@ export default class Field extends Stage {
    */
   rightdown() {
     if (!this.isMouseLeftDown) {
-      this.emitter.emit('click:right', this.getHoveredCellPosition())
+      this.emit('click:right', this.getHoveredCellPosition())
     }
     this.isMouseRightDown = true
   }
 
-  on(...args) {
-    this.emitter.on.apply(this.emitter, args)
+  update(fieldModel) {
+    fieldModel.cells.forEach(cellModel => this.updateCell(cellModel))
+
+    if (this.isMouseLeftDown) {
+      const mousePosition = this.getHoveredCellPosition()
+      const hoveredCellModel = fieldModel.getCell(mousePosition.x, mousePosition.y)
+
+      if (hoveredCellModel.state === CellState.CLOSE) {
+        this.setCellTexture(hoveredCellModel.x, hoveredCellModel.y, Texture.fromFrame('cell.empty'))
+      }
+      // 両クリックの場合、周囲も同じ判定をする
+      if (this.isMouseRightDown) {
+        fieldModel.getNeighborCells(hoveredCellModel).forEach(cell => {
+          if (cell.state === CellState.CLOSE) {
+            this.setCellTexture(cell.x, cell.y, Texture.fromFrame('cell.empty'))
+          }
+        })
+      }
+    }
   }
 
   setCellTexture(x, y, texture) {
     this.cells[x + y * this.fieldWidth].setTexture(texture)
   }
 
-  update(cellModels) {
-    const mousePosition = this.getMousePosition()
-    const x = Math.floor(mousePosition.x / 16)
-    const y = Math.floor(mousePosition.y / 16)
-
-    cellModels.forEach(cell => {
-      let frameName = ''
-      switch (cell.state) {
-        case CellState.OPEN:
-          if (cell.isMine) {
-            frameName = cell.clickedMine ? 'cell.mine_red' : 'cell.mine'
-          } else if (cell.neighborMineCount === 0) {
-            frameName = 'cell.empty'
-          } else {
-            frameName = `cell.number_${cell.neighborMineCount}`
-          }
-          break;
-        case CellState.CLOSE:
-          if (this.isMouseLeftDown && cell.x === x && cell.y === y) {
-            frameName = 'cell.empty'
-          } else {
-            frameName = 'cell.close'
-          }
-          break;
-        case CellState.FLAG:
-          frameName = 'cell.close_flag'
-          break;
-      }
-      this.setCellTexture(cell.x, cell.y, Texture.fromFrame(frameName))
-    })
+  updateCell(cellModel) {
+    let frameName = ''
+    switch (cellModel.state) {
+      case CellState.OPEN:
+        if (cellModel.isMine) {
+          frameName = cellModel.clickedMine ? 'cell.mine_red' : 'cell.mine'
+        } else if (cellModel.neighborMineCount === 0) {
+          frameName = 'cell.empty'
+        } else {
+          frameName = `cell.number_${cellModel.neighborMineCount}`
+        }
+        break;
+      case CellState.CLOSE:
+        frameName = 'cell.close'
+        break;
+      case CellState.FLAG:
+        frameName = 'cell.close_flag'
+        break;
+    }
+    this.setCellTexture(cellModel.x, cellModel.y, Texture.fromFrame(frameName))
   }
 }

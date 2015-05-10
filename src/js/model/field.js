@@ -28,9 +28,9 @@ export class Cell {
  * @param {number} width  盤面の幅
  * @param {number} height 盤面の高さ
  */
-export default class Field {
+export default class Field extends EventEmitter2 {
   constructor(width, height) {
-    this.emitter = new EventEmitter2
+    super()
 
     this.width = width
     this.height = height
@@ -90,6 +90,7 @@ export default class Field {
 
   /**
    * 指定したセルの周囲のセルの地雷数を取得する
+   * @private
    * @param  {Cell} cell
    * @return {number}
    */
@@ -112,7 +113,7 @@ export default class Field {
         continue
       }
       cell.state = CellState.OPEN
-      this.emitter.emit('change:cell', cell)
+      this.emit('change:cell', cell)
       // セルが地雷ではなく、周囲のセルに地雷がなかった場合は、周囲のセルも開く。
       if (!cell.isMine && this.getNeighborMineCount(cell) === 0) {
         targetCells.push.apply(targetCells, this.getNeighborCells(cell))
@@ -133,7 +134,7 @@ export default class Field {
       return
     }
     cell.state = flagState ? CellState.FLAG : CellState.CLOSE
-    this.emitter.emit('change:cell', cell)
+    this.emit('change:cell', cell)
   }
 
   /**
@@ -142,9 +143,5 @@ export default class Field {
    */
   getOpenCellCount() {
     return this.cells.filter(cell => cell.state === CellState.OPEN).length
-  }
-
-  on(...args) {
-    this.emitter.on.apply(this.emitter, args)
   }
 }

@@ -2,6 +2,7 @@ import Field from './field.js'
 import {chain} from 'lodash'
 import {EventEmitter2} from 'eventemitter2'
 
+
 import * as CellState from '../const/cellstate'
 
 const FINISH_STATE_FAIL = 'fail'
@@ -14,10 +15,11 @@ const FINISH_STATE_COMPLETE = 'complete'
  * @param {number} width  盤面の幅
  * @param {number} height 盤面の高さ
  */
-export default class Game {
+export default class Game extends EventEmitter2 {
   constructor(width, height, mineCount) {
+    super()
+
     this.field = new Field(width, height)
-    this.emitter = new EventEmitter2
 
     this.isFirst = true
     this.finishState = null
@@ -41,10 +43,6 @@ export default class Game {
     return isMineArray
   }
 
-  on(...args) {
-    this.emitter.on.apply(this.emitter, args)
-  }
-
   /**
    * @private
    */
@@ -54,7 +52,7 @@ export default class Game {
     }
     if (this.field.getOpenCellCount() === this.field.width * this.field.height - this.mineCount) {
       this.finishState = FINISH_STATE_COMPLETE
-      this.emitter.emit('finish:complete')
+      this.emit('finish:complete')
     }
   }
 
@@ -69,7 +67,7 @@ export default class Game {
       }
     })
 
-    this.emitter.emit('finish:fail')
+    this.emit('finish:fail')
   }
 
   leftClick(x, y) {

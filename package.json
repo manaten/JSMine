@@ -8,6 +8,7 @@
     "start": "gulp start",
     "build": "gulp build",
     "debug": "gulp debug",
+    "lint" : "eslint test src",
     "test": "mocha test/**/*.test.js"
   },
   "repository": {
@@ -29,6 +30,7 @@
     "babelify": "^6.0.2",
     "browserify": "^9.0.8",
     "coffee-script": "^1.9.2",
+    "eslint": "^0.21.0",
     "gulp": "^3.8.11",
     "gulp-babel": "^5.1.0",
     "gulp-browserify": "^0.5.1",

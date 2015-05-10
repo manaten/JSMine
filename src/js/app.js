@@ -32,7 +32,7 @@ function init() {
   document.body.appendChild(renderer.view)
 
   const draw = () => {
-    fieldView.update(gameModel.field.cells)
+    fieldView.update(gameModel.field)
     renderer.render(fieldView)
     raf(draw)
   }
