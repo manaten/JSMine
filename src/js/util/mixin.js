@@ -8,8 +8,8 @@ export default function mixin(parent, ...mixins) {
   class Mixed extends parent {}
   for (let mixin of mixins) {
     for (let prop of Object.keys(mixin.prototype)) {
-      Mixed.prototype[prop] = mixin.prototype[prop];
+      Mixed.prototype[prop] = mixin.prototype[prop]
     }
   }
-  return Mixed;
+  return Mixed
 }

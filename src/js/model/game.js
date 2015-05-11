@@ -32,6 +32,9 @@ export default class Game extends EventEmitter2 {
 
   /**
    * @private
+   * @param  {number}          startX 開始地点のX座標
+   * @param  {number}          startY 開始地点のY座標
+   * @return {Array.<boolean>} width * height サイズの各マスが地雷かどうかを表す配列
    */
   _createMineArray(startX, startY) {
     let isMineArray = chain(this.field.width * this.field.height - 1)
@@ -45,6 +48,7 @@ export default class Game extends EventEmitter2 {
 
   /**
    * @private
+   * @return {void}
    */
   _checkFinish() {
     if (this.finishState !== null) {
@@ -58,6 +62,7 @@ export default class Game extends EventEmitter2 {
 
   /**
    * @private
+   * @return {void}
    */
   _finishByFail() {
     this.finishState = FINISH_STATE_FAIL

@@ -46,6 +46,7 @@ export default class Field extends EventEmitter2 {
   /**
    * 譜面の地雷状況を真偽値の配列を渡すことで設定する
    * @param {Array.<boolean>} isMineArray 地雷であればtrueのwidth*heightの長さの配列
+   * @return {void}
    */
   setMines(isMineArray) {
     if (isMineArray.length !== this.cells.length) {
@@ -62,9 +63,9 @@ export default class Field extends EventEmitter2 {
 
   /**
    * 指定した座標のセルを取得する
-   * @param  {number} x
-   * @param  {number} y
-   * @return {?Cell}
+   * @param  {number} x x座標
+   * @param  {number} y y座標
+   * @return {?Cell}  取得できた場合Cellオブジェクトオブジェクト
    */
   getCell(x, y) {
     if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
@@ -75,8 +76,8 @@ export default class Field extends EventEmitter2 {
 
   /**
    * 指定したセルの周囲のセルを取得する
-   * @param  {Cell} cell
-   * @return {Array.<Cell>}
+   * @param  {Cell} cell    指定するセル
+   * @return {Array.<Cell>} 周囲のセルの配列
    */
   getNeighborCells(cell) {
     return [
@@ -90,8 +91,9 @@ export default class Field extends EventEmitter2 {
 
   /**
    * 指定した座標のセルを開く
-   * @param  {number} x
-   * @param  {number} y
+   * @param  {number} x x座標
+   * @param  {number} y y座標
+   * @return {void}
    */
   openCell(x, y) {
     let targetCells = []
@@ -99,23 +101,23 @@ export default class Field extends EventEmitter2 {
 
     while (targetCells.length > 0) {
       let cell = targetCells.pop()
-      if (cell.state !== CellState.CLOSE) {
-        continue
-      }
-      cell.state = CellState.OPEN
-      this.emit('change:cell', cell)
-      // セルが地雷ではなく、周囲のセルに地雷がなかった場合は、周囲のセルも開く。
-      if (!cell.isMine && cell.neighborMineCount === 0) {
-        targetCells.push.apply(targetCells, this.getNeighborCells(cell))
+      if (cell.state === CellState.CLOSE) {
+        cell.state = CellState.OPEN
+        this.emit('change:cell', cell)
+        // セルが地雷ではなく、周囲のセルに地雷がなかった場合は、周囲のセルも開く。
+        if (!cell.isMine && cell.neighborMineCount === 0) {
+          targetCells.push.apply(targetCells, this.getNeighborCells(cell))
+        }
       }
     }
   }
 
   /**
    * 指定した座標の旗状態を変更する
-   * @param {number}  x
-   * @param {number}  y
+   * @param {number}  x         x座標
+   * @param {number}  y         y座標
    * @param {boolean} flagState 旗を立てる場合はtrue
+   * @return {void}
    */
   setFlag(x, y, flagState) {
     const cell = this.getCell(x, y)
@@ -129,7 +131,7 @@ export default class Field extends EventEmitter2 {
 
   /**
    * 開いているセルの数を取得する。
-   * @return {number}
+   * @return {number} 開いているセルの数
    */
   getOpenCellCount() {
     return this.cells.filter(cell => cell.state === CellState.OPEN).length

@@ -9,7 +9,7 @@ describe('Model/Field', () => {
     const width = 3
     const height = 4
 
-    it("should set properties.", () => {
+    it('should set properties.', () => {
       let field = new Field(width, height)
 
       assert(field.width === width)
@@ -30,10 +30,10 @@ describe('Model/Field', () => {
     const width = 3
     const height = 4
     const isMineArray = [
-      true,  false, true,
+      true, false, true,
       false, false, false,
-      false,  true, false,
-      true,  true, false,
+      false, true, false,
+      true, true, false
     ]
 
     it("should change cell's isMine state.", () => {
@@ -74,10 +74,10 @@ describe('Model/Field', () => {
     const width = 3
     const height = 4
     const isMineArray = [
-      true,  false, true,
+      true, false, true,
       false, false, false,
-      false,  true, false,
-      true,  true, false,
+      false, true, false,
+      true, true, false
     ]
 
     it('should get cell.', () => {
@@ -106,10 +106,10 @@ describe('Model/Field', () => {
     const width = 3
     const height = 4
     const isMineArray = [
-      true,  false, true,
+      true, false, true,
       false, false, false,
-      false,  true, false,
-      true,  true, false,
+      false, true, false,
+      true, true, false
     ]
     it('should return neighbor cells.', () => {
       let field = new Field(width, height)
@@ -152,10 +152,10 @@ describe('Model/Field', () => {
     const height = 4
     context("opening cell which NeighborMineCount isn't 0.", () => {
       const isMineArray = [
-        true,  false, true,
+        true, false, true,
         false, false, false,
-        false,  true, false,
-        true,  true, false,
+        false, true, false,
+        true, true, false
       ]
       it('should change cell state to open.', () => {
         let field = new Field(width, height)
@@ -204,10 +204,10 @@ describe('Model/Field', () => {
 
     context('opening cell which NeighborMineCount is 0.', () => {
       const isMineArray = [
-        true,  false, true,
+        true, false, true,
         false, false, false,
         false, false, false,
-        true,  false, false,
+        true, false, false
       ]
 
       it('should change neighbor cells state to open.', () => {
@@ -246,10 +246,10 @@ describe('Model/Field', () => {
     const width = 3
     const height = 4
     const isMineArray = [
-      true,  false, true,
+      true, false, true,
       false, false, false,
-      false,  true, false,
-      true,  true, false,
+      false, true, false,
+      true, true, false
     ]
 
     it('should change cell flag state.', () => {
@@ -290,10 +290,10 @@ describe('Model/Field', () => {
     const width = 3
     const height = 4
     const isMineArray = [
-      true,  false, true,
+      true, false, true,
       false, false, false,
-      false,  true, false,
-      true,  true, false,
+      false, true, false,
+      true, true, false
     ]
 
     it('should return count of open cells.', () => {

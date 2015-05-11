@@ -1,4 +1,4 @@
 require('babel-core/register')({
-  plugins: ['babel-plugin-espower'],
+  plugins   : ['babel-plugin-espower'],
   extensions: ['.js']
-});
+})

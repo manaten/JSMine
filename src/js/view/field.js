@@ -9,8 +9,8 @@ const MINE_SIZE = 16
 
 class Cell extends Sprite {
   constructor() {
-    super(Texture.fromFrame('cell.close'), MINE_SIZE, MINE_SIZE);
-    this.interactive = true;
+    super(Texture.fromFrame('cell.close'), MINE_SIZE, MINE_SIZE)
+    this.interactive = true
   }
 }
 
@@ -45,6 +45,7 @@ export default class Field extends mixin(Stage, EventEmitter2) {
 
   /**
    * @override
+   * @return {void}
    */
   mouseout() {
     this.isMouseLeftDown = false
@@ -53,6 +54,7 @@ export default class Field extends mixin(Stage, EventEmitter2) {
 
   /**
    * @override
+   * @return {void}
    */
   mousedown() {
     this.isMouseLeftDown = true
@@ -60,6 +62,8 @@ export default class Field extends mixin(Stage, EventEmitter2) {
 
   /**
    * @override
+   * @return {void}
+   *
    */
   mouseup() {
     if (this.isMouseLeftDown && this.isMouseRightDown) {
@@ -72,6 +76,7 @@ export default class Field extends mixin(Stage, EventEmitter2) {
 
   /**
    * @override
+   * @return {void}
    */
   rightup() {
     if (this.isMouseLeftDown && this.isMouseRightDown) {
@@ -82,6 +87,7 @@ export default class Field extends mixin(Stage, EventEmitter2) {
 
   /**
    * @override
+   * @return {void}
    */
   rightdown() {
     if (!this.isMouseLeftDown) {
@@ -126,13 +132,13 @@ export default class Field extends mixin(Stage, EventEmitter2) {
         } else {
           frameName = `cell.number_${cellModel.neighborMineCount}`
         }
-        break;
+        break
       case CellState.CLOSE:
         frameName = 'cell.close'
-        break;
+        break
       case CellState.FLAG:
         frameName = 'cell.close_flag'
-        break;
+        break
     }
     this.setCellTexture(cellModel.x, cellModel.y, Texture.fromFrame(frameName))
   }

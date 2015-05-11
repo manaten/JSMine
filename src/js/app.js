@@ -6,9 +6,9 @@ import FieldView from './view/field'
 import GameModel from './model/game'
 
 function init() {
-  const width = parseInt(getParameter('width') || 20)
-  const height = parseInt(getParameter('height') || 10)
-  const mineNum = parseInt(getParameter('mine') || 30)
+  const width = parseInt(getParameter('width') || 20, 10)
+  const height = parseInt(getParameter('height') || 10, 10)
+  const mineNum = parseInt(getParameter('mine') || 30, 10)
 
   const gameModel = new GameModel(width, height, mineNum)
   const fieldView = new FieldView(width, height)
@@ -21,7 +21,7 @@ function init() {
   fieldView.on('click:twin', position => {
     gameModel.twinClick(position.x, position.y)
   })
-  gameModel.on('finish:complete', position => {
+  gameModel.on('finish:complete', () => {
     window.alert('ゲームクリア!')
   })
 
