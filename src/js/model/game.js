@@ -75,6 +75,12 @@ export default class Game extends EventEmitter2 {
     this.emit('finish:fail')
   }
 
+  /**
+   * 左クリック時の挙動を行う
+   * @param {number} x クリックするx座標
+   * @param {number} y クリックするy座標
+   * @return {void}
+   */
   leftClick(x, y) {
     if (this.finishState !== null) {
       return
@@ -99,6 +105,12 @@ export default class Game extends EventEmitter2 {
     this._checkFinish()
   }
 
+  /**
+   * 右クリック時の挙動を行う
+   * @param {number} x クリックするx座標
+   * @param {number} y クリックするy座標
+   * @return {void}
+   */
   rightClick(x, y) {
     if (this.finishState !== null) {
       return
@@ -110,6 +122,12 @@ export default class Game extends EventEmitter2 {
     this.field.setFlag(x, y, cell.state !== CellState.FLAG)
   }
 
+  /**
+   * 両方クリック時の挙動を行う
+   * @param {number} x クリックするx座標
+   * @param {number} y クリックするy座標
+   * @return {void}
+   */
   twinClick(x, y) {
     if (this.finishState !== null || this.isFirst) {
       return
