@@ -30,6 +30,8 @@ function init() {
     e.preventDefault()
   }, false)
   document.body.appendChild(renderer.view)
+  // new PIXI.interaction.InteractionManager(renderer)
+
 
   const draw = () => {
     fieldView.update(gameModel.field)
@@ -40,9 +42,8 @@ function init() {
 }
 
 window.addEventListener('load', () => {
-  const loader = new PIXI.AssetLoader([
-    './assets/mine.json'
-  ])
-  loader.onComplete = init
+  const loader = new PIXI.loaders.Loader()
+  loader.add('./assets/mine.json')
+  loader.once('complete', init)
   loader.load()
 })

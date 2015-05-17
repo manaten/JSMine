@@ -4,22 +4,31 @@ gulp.task 'copy:assets', ->
   gulp.src 'src/assets/**/*'
   .pipe gulp.dest 'build/assets'
 
+
+replace = require 'gulp-replace-async'
+datauri = require 'datauri'
 through2 = require 'through2'
 browserify = require 'browserify'
 babelify = require 'babelify'
 gulp.task 'build:js', ->
   # https://gist.github.com/Problematic/c95444472e6d3c5f8460
   gulp
-  .src './src/js/app.js'
+  .src './src/js/**'
+  # .pipe replace /\.\/assets\/mine\.png/g, (match, done) ->
+  #   datauri './src/assets/mine.png', done
+  # .pipe replace /\.\/assets\/mine\.json/g, (match, done) ->
+  #   datauri './src/assets/mine.json', done
   .pipe through2.obj (file, enc, next) ->
-    browserify file.path
+    return next null if !/src\/js\/app\.js$/.test file.path
+    browserify file.path, {debug: true}
     .transform babelify
     .bundle (err, res) ->
       return next err if err
-      file.contents = res;
+      file.contents = res
       next null, file
   .on 'error', (err) ->
-    console.log err.stack
+    console.log err.message
+    console.log err.codeFrame if err.codeFrame
     this.emit 'end'
   .pipe gulp.dest 'build/js'
 

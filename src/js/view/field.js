@@ -1,8 +1,6 @@
-import {Texture, Sprite, Stage} from 'pixi.js'
+import {Texture, Sprite, Container} from 'pixi.js'
 import {range} from 'lodash'
-import {EventEmitter2} from 'eventemitter2'
 
-import mixin from '../util/mixin'
 import * as CellState from '../const/cellstate'
 
 const MINE_SIZE = 16
@@ -14,7 +12,6 @@ const MINE_SIZE = 16
 class Cell extends Sprite {
   constructor() {
     super(Texture.fromFrame('cell.close'), MINE_SIZE, MINE_SIZE)
-    this.interactive = true
   }
 }
 
@@ -24,10 +21,9 @@ class Cell extends Sprite {
  * @param  {number} fieldWidth  フィールドの幅
  * @param  {number} fieldHeight フィールドの高さ
  */
-export default class Field extends mixin(Stage, EventEmitter2) {
+export default class Field extends Container {
   constructor(fieldWidth, fieldHeight) {
     super(0x888888)
-    EventEmitter2.apply(this)
 
     this.fieldWidth = fieldWidth
     this.fieldHeight = fieldHeight
@@ -43,6 +39,50 @@ export default class Field extends mixin(Stage, EventEmitter2) {
       return cell
     })
     this.cells.forEach(cell => this.addChild(cell))
+    this._initEvents()
+
+    this.mousePosition = null
+  }
+
+  /**
+   * @private
+   */
+  _initEvents() {
+    this.interactive = true
+    this.on('mousemove', (e) => {
+      this.mousePosition = this._getHoveredCellPosition(e)
+      if (this.mousePosition.x < 0 || this.mousePosition.x >= this.fieldWidth || this.mousePosition.y < 0 || this.mousePosition.y >= this.fieldHeight) {
+        this.mousePosition = null
+        this.isMouseLeftDown = false
+        this.isMouseRightDown = false
+      }
+    })
+    this.on('mousedown', () => {
+      this.isMouseLeftDown = true
+    })
+
+    this.on('mouseup', (e) => {
+      if (this.isMouseLeftDown && this.isMouseRightDown) {
+        this.emit('click:twin', this._getHoveredCellPosition(e))
+      } else if (this.isMouseLeftDown) {
+        this.emit('click:left', this._getHoveredCellPosition(e))
+      }
+      this.isMouseLeftDown = false
+    })
+
+    this.on('rightup', (e) => {
+      if (this.isMouseLeftDown && this.isMouseRightDown) {
+        this.emit('click:twin', this._getHoveredCellPosition(e))
+      }
+      this.isMouseRightDown = false
+    })
+
+    this.on('rightdown', (e) => {
+      if (!this.isMouseLeftDown) {
+        this.emit('click:right', this._getHoveredCellPosition(e))
+      }
+      this.isMouseRightDown = true
+    })
   }
 
   /**
@@ -50,66 +90,14 @@ export default class Field extends mixin(Stage, EventEmitter2) {
    * @private
    * @return {{x:number, y:number}} マウスホバーしている座標
    */
-  _getHoveredCellPosition() {
-    let mousePosition = this.getMousePosition()
+  _getHoveredCellPosition(e) {
+    const mousePosition = e.data.getLocalPosition(this)
     return {
       x: Math.floor(mousePosition.x / MINE_SIZE),
       y: Math.floor(mousePosition.y / MINE_SIZE)
     }
   }
 
-  /**
-   * @override
-   * @return {void}
-   */
-  mouseout() {
-    this.isMouseLeftDown = false
-    this.isMouseRightDown = false
-  }
-
-  /**
-   * @override
-   * @return {void}
-   */
-  mousedown() {
-    this.isMouseLeftDown = true
-  }
-
-  /**
-   * @override
-   * @return {void}
-   *
-   */
-  mouseup() {
-    if (this.isMouseLeftDown && this.isMouseRightDown) {
-      this.emit('click:twin', this._getHoveredCellPosition())
-    } else if (this.isMouseLeftDown) {
-      this.emit('click:left', this._getHoveredCellPosition())
-    }
-    this.isMouseLeftDown = false
-  }
-
-  /**
-   * @override
-   * @return {void}
-   */
-  rightup() {
-    if (this.isMouseLeftDown && this.isMouseRightDown) {
-      this.emit('click:twin', this._getHoveredCellPosition())
-    }
-    this.isMouseRightDown = false
-  }
-
-  /**
-   * @override
-   * @return {void}
-   */
-  rightdown() {
-    if (!this.isMouseLeftDown) {
-      this.emit('click:right', this._getHoveredCellPosition())
-    }
-    this.isMouseRightDown = true
-  }
 
   /**
    * ビューの更新を行う
@@ -119,8 +107,9 @@ export default class Field extends mixin(Stage, EventEmitter2) {
   update(fieldModel) {
     fieldModel.cells.forEach(cellModel => this.updateCell(cellModel))
 
-    if (this.isMouseLeftDown) {
-      const mousePosition = this._getHoveredCellPosition()
+    if (this.isMouseLeftDown && this.mousePosition) {
+      const mousePosition = this.mousePosition
+    //   const mousePosition = this._getHoveredCellPosition()
       const hoveredCellModel = fieldModel.getCell(mousePosition.x, mousePosition.y)
 
       if (hoveredCellModel.state === CellState.CLOSE) {
@@ -146,7 +135,7 @@ export default class Field extends mixin(Stage, EventEmitter2) {
    * @return {void}
    */
   _setCellTexture(x, y, texture) {
-    this.cells[x + y * this.fieldWidth].setTexture(texture)
+    this.cells[x + y * this.fieldWidth].texture = texture
   }
 
   /**

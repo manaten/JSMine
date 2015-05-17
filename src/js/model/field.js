@@ -1,4 +1,4 @@
-import {EventEmitter2} from 'eventemitter2'
+import EventEmitter from 'eventemitter3'
 import {range, zipWith} from 'lodash'
 
 import * as CellState from '../const/cellstate'
@@ -28,7 +28,7 @@ export class Cell {
  * @param {number} width  盤面の幅
  * @param {number} height 盤面の高さ
  */
-export default class Field extends EventEmitter2 {
+export default class Field extends EventEmitter {
   constructor(width, height) {
     super()
 

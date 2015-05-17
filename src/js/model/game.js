@@ -1,6 +1,6 @@
 import Field from './field.js'
 import {chain} from 'lodash'
-import {EventEmitter2} from 'eventemitter2'
+import EventEmitter from 'eventemitter3'
 
 
 import * as CellState from '../const/cellstate'
@@ -15,7 +15,7 @@ const FINISH_STATE_COMPLETE = 'complete'
  * @param {number} width  盤面の幅
  * @param {number} height 盤面の高さ
  */
-export default class Game extends EventEmitter2 {
+export default class Game extends EventEmitter {
   constructor(width, height, mineCount) {
     super()
 
