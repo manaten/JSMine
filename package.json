@@ -42,7 +42,8 @@
     "mocha": "^2.2.4",
     "power-assert": "^0.11.0",
     "sinon": "^1.14.1",
-    "through2": "^0.6.5"
+    "through2": "^0.6.5",
+    "uglifyjs": "^2.4.10"
   },
   "dependencies": {
     "eventemitter3": "^1.1.0",

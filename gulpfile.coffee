@@ -1,31 +1,34 @@
 gulp = require 'gulp'
 
-gulp.task 'copy:assets', ->
-  gulp.src 'src/assets/**/*'
-  .pipe gulp.dest 'build/assets'
-
 
 replace = require 'gulp-replace-async'
 datauri = require 'datauri'
+gulp.task 'inline:json', ->
+  gulp
+  .src './src/assets/**/*.json'
+  .pipe replace /\.\/mine\.gif/g, (match, done) ->
+    datauri './src/assets/mine.gif', done
+  .on 'error', (err) ->
+    console.log err.message
+    this.emit 'end'
+  .pipe gulp.dest 'tmp/assets'
+
 through2 = require 'through2'
 browserify = require 'browserify'
 babelify = require 'babelify'
-gulp.task 'build:js', ->
-  # https://gist.github.com/Problematic/c95444472e6d3c5f8460
+gulp.task 'build:js', ['inline:json'], ->
   gulp
-  .src './src/js/**'
-  # .pipe replace /\.\/assets\/mine\.png/g, (match, done) ->
-  #   datauri './src/assets/mine.png', done
-  # .pipe replace /\.\/assets\/mine\.json/g, (match, done) ->
-  #   datauri './src/assets/mine.json', done
+  .src './src/js/app.js'
   .pipe through2.obj (file, enc, next) ->
-    return next null if !/src\/js\/app\.js$/.test file.path
     browserify file.path, {debug: true}
     .transform babelify
     .bundle (err, res) ->
       return next err if err
       file.contents = res
       next null, file
+  .pipe replace /\.\/assets\/mine\.json/g, (match, done) ->
+    console.log match[0]
+    datauri './tmp/assets/mine.json', done
   .on 'error', (err) ->
     console.log err.message
     console.log err.codeFrame if err.codeFrame
@@ -49,10 +52,9 @@ gulp.task 'webserver', ->
     fallback: 'index.html'
 
 gulp.task 'watch', ->
-  gulp.watch ['src/**/*.js'], ['build:js']
-  gulp.watch ['src/assets/**/*'], ['copy:assets']
+  gulp.watch ['src/**/*.js', 'src/assets/**/*'], ['build:js']
   gulp.watch ['src/**/*.jade'], ['build:html']
 
-gulp.task 'build', ['build:js', 'build:html', 'copy:assets']
+gulp.task 'build', ['build:js', 'build:html']
 gulp.task 'start', ['build', 'webserver']
 gulp.task 'debug', ['build', 'watch', 'webserver']
