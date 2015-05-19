@@ -26,13 +26,12 @@ gulp.task 'build:js', ['inline:json'], ->
       return next err if err
       file.contents = res
       next null, file
-  .pipe replace /\.\/assets\/mine\.json/g, (match, done) ->
-    console.log match[0]
-    datauri './tmp/assets/mine.json', done
   .on 'error', (err) ->
     console.log err.message
     console.log err.codeFrame if err.codeFrame
     this.emit 'end'
+  .pipe replace /\.\/assets\/mine\.json/g, (match, done) ->
+    datauri './tmp/assets/mine.json', done
   .pipe gulp.dest 'build/js'
 
 jade = require 'gulp-jade'

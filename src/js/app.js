@@ -30,7 +30,6 @@ function init() {
     e.preventDefault()
   }, false)
   document.body.appendChild(renderer.view)
-  // new PIXI.interaction.InteractionManager(renderer)
 
 
   const draw = () => {

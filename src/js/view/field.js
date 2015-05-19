@@ -46,11 +46,12 @@ export default class Field extends Container {
 
   /**
    * @private
+   * @return {void}
    */
   _initEvents() {
     this.interactive = true
     this.on('mousemove', (e) => {
-      this.mousePosition = this._getHoveredCellPosition(e)
+      this.mousePosition = this._getHoveredCellPosition(e.data)
       if (this.mousePosition.x < 0 || this.mousePosition.x >= this.fieldWidth || this.mousePosition.y < 0 || this.mousePosition.y >= this.fieldHeight) {
         this.mousePosition = null
         this.isMouseLeftDown = false
@@ -63,23 +64,23 @@ export default class Field extends Container {
 
     this.on('mouseup', (e) => {
       if (this.isMouseLeftDown && this.isMouseRightDown) {
-        this.emit('click:twin', this._getHoveredCellPosition(e))
+        this.emit('click:twin', this._getHoveredCellPosition(e.data))
       } else if (this.isMouseLeftDown) {
-        this.emit('click:left', this._getHoveredCellPosition(e))
+        this.emit('click:left', this._getHoveredCellPosition(e.data))
       }
       this.isMouseLeftDown = false
     })
 
     this.on('rightup', (e) => {
       if (this.isMouseLeftDown && this.isMouseRightDown) {
-        this.emit('click:twin', this._getHoveredCellPosition(e))
+        this.emit('click:twin', this._getHoveredCellPosition(e.data))
       }
       this.isMouseRightDown = false
     })
 
     this.on('rightdown', (e) => {
       if (!this.isMouseLeftDown) {
-        this.emit('click:right', this._getHoveredCellPosition(e))
+        this.emit('click:right', this._getHoveredCellPosition(e.data))
       }
       this.isMouseRightDown = true
     })
@@ -88,10 +89,11 @@ export default class Field extends Container {
   /**
    * マウスホバーしているセルの座標を取得する
    * @private
+   * @param {InteractionData} data イベントハンドラから得られるInteractionDataのインスタンス
    * @return {{x:number, y:number}} マウスホバーしている座標
    */
-  _getHoveredCellPosition(e) {
-    const mousePosition = e.data.getLocalPosition(this)
+  _getHoveredCellPosition(data) {
+    const mousePosition = data.getLocalPosition(this)
     return {
       x: Math.floor(mousePosition.x / MINE_SIZE),
       y: Math.floor(mousePosition.y / MINE_SIZE)
@@ -109,7 +111,6 @@ export default class Field extends Container {
 
     if (this.isMouseLeftDown && this.mousePosition) {
       const mousePosition = this.mousePosition
-    //   const mousePosition = this._getHoveredCellPosition()
       const hoveredCellModel = fieldModel.getCell(mousePosition.x, mousePosition.y)
 
       if (hoveredCellModel.state === CellState.CLOSE) {
